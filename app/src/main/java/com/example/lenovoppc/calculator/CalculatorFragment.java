@@ -4,9 +4,18 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.lenovoppc.calculator.Model.NumberButton;
+
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -22,10 +31,17 @@ public class CalculatorFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static final String FUNCTION = "function";
+    public static final String OPERATION = "operation";
+    public static final String NUMBER = "number";
+    public static final String DOT = "dot";
+    public static final String RESULT = "result";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    @BindView(R.id.rv_buttons) RecyclerView mButtonsRV;
 
     private OnFragmentInteractionListener mListener;
 
@@ -65,7 +81,19 @@ public class CalculatorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_calculator, container, false);
+        View view = inflater.inflate(R.layout.fragment_calculator, container, false);
+        ButterKnife.bind(this, view);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(container.getContext(),4){
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+        mButtonsRV.setLayoutManager(gridLayoutManager);
+
+        CalculatorAdapter calculatorAdapter = new CalculatorAdapter(setUpCalculator(),getResources());
+        mButtonsRV.setAdapter(calculatorAdapter);
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -107,5 +135,37 @@ public class CalculatorFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+
+    /**
+     * Simple helper method to build the {@link NumberButton} objects
+     * @return objects to pass to adapter
+     */
+    private ArrayList<NumberButton> setUpCalculator(){
+        String[] array = getResources().getStringArray(R.array.calculator_contents);
+        ArrayList<NumberButton> numberButtons = new ArrayList<>();
+        numberButtons.add(new NumberButton(array[0], FUNCTION));
+        numberButtons.add(new NumberButton(array[1], OPERATION));
+        numberButtons.add(new NumberButton(array[2],OPERATION));
+        numberButtons.add(new NumberButton(array[3],OPERATION));
+        numberButtons.add(new NumberButton(array[4], NUMBER));
+        numberButtons.add(new NumberButton(array[5],NUMBER));
+        numberButtons.add(new NumberButton(array[6],NUMBER));
+        numberButtons.add(new NumberButton(array[7],OPERATION));
+        numberButtons.add(new NumberButton(array[8],NUMBER));
+        numberButtons.add(new NumberButton(array[9],NUMBER));
+        numberButtons.add(new NumberButton(array[10],NUMBER));
+        numberButtons.add(new NumberButton(array[11],OPERATION));
+        numberButtons.add(new NumberButton(array[12],NUMBER));
+        numberButtons.add(new NumberButton(array[13],NUMBER));
+        numberButtons.add(new NumberButton(array[14],NUMBER));
+        numberButtons.add(new NumberButton(array[15],OPERATION));
+        numberButtons.add(new NumberButton(array[16], DOT));
+        numberButtons.add(new NumberButton(array[17],NUMBER));
+        numberButtons.add(new NumberButton(array[18],FUNCTION));
+        numberButtons.add(new NumberButton(array[19], RESULT));
+
+        return numberButtons;
     }
 }

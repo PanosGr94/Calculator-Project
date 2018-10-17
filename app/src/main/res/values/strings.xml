@@ -4,7 +4,29 @@
     <string name="title_convertor">Currency</string>
 
     <!-- Calculator Text -->
-    <string name="calc_frag_text">This is the calculator fragment!!</string>
+    <string name="calc_frag_text">248*6–156</string>
+    <string-array name="calculator_contents">
+        <item>DEL</item>
+        <item>√</item>
+        <item>%</item>
+        <item>÷</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>×</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>-</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>+</item>
+        <item>.</item>
+        <item>0</item>
+        <item>AC</item>
+        <item>=</item>
+    </string-array>
 
     <!-- Convertor Text -->
     <string name="conv_frag_text">Converter fragment!!</string>

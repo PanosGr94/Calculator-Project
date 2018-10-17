@@ -1,19 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:weightSum="7"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CalculatorFragment">
 
     <!-- TODO: Update calculator fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/calc_frag_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/ll_convert"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:weightSum="7"
+        android:layout_weight="1"
+        android:background="@android:color/white"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_history"
+        >
 
-</android.support.constraint.ConstraintLayout>
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            />
+
+        <TextView
+            android:id="@+id/tv_result"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="1248"
+            android:gravity="center|end"
+            android:textColor="@android:color/background_dark"
+            android:textSize="48sp"
+            android:layout_weight="5" />
+
+        <ImageButton
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_dashboard_exchange"
+            />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_history"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5"
+        android:layout_marginRight="16dp"
+        android:text="@string/calc_frag_text"
+        android:gravity="center|end"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@id/ll_convert"
+        app:layout_constraintBottom_toTopOf="@id/rv_buttons"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5.5"
+        tools:listItem="@layout/item_button"
+        android:background="@color/colorBackground"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_history"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+</LinearLayout>
