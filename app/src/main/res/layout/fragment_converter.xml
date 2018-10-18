@@ -17,7 +17,7 @@
         android:textColor="@color/colorAccent"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/et_sell_value"
+        app:layout_constraintBottom_toTopOf="@id/et_buy_value"
         app:layout_constraintEnd_toEndOf="@id/guideline_labels"
         />
 
@@ -28,13 +28,13 @@
         android:text="€"
         android:textColor="@color/colorText"
         android:textSize="48sp"
-        app:layout_constraintLeft_toLeftOf="@id/et_sell_value"
-        app:layout_constraintBottom_toBottomOf="@id/et_sell_value"
-        app:layout_constraintTop_toTopOf="@id/et_sell_value"
+        app:layout_constraintLeft_toLeftOf="@id/et_buy_value"
+        app:layout_constraintBottom_toBottomOf="@id/et_buy_value"
+        app:layout_constraintTop_toTopOf="@id/et_buy_value"
         />
 
     <EditText
-        android:id="@+id/et_sell_value"
+        android:id="@+id/et_buy_value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         style="@style/EditTextCustom"
@@ -58,7 +58,7 @@
         android:background="@color/colorText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@id/ib_switch"
-        app:layout_constraintTop_toBottomOf="@id/et_sell_value"
+        app:layout_constraintTop_toBottomOf="@id/et_buy_value"
         app:layout_constraintBottom_toTopOf="@id/tv_label_buy"
 
         />
@@ -81,9 +81,9 @@
         android:textSize="48sp"
         android:layout_marginTop="32dp"
         android:textColor="@color/colorAccent"
-        app:layout_constraintBottom_toTopOf="@id/et_buy_value"
+        app:layout_constraintBottom_toTopOf="@id/et_sell_value"
         app:layout_constraintTop_toBottomOf="@id/view_separator"
-        app:layout_constraintLeft_toLeftOf="@id/et_buy_value"
+        app:layout_constraintLeft_toLeftOf="@id/et_sell_value"
          />
 
     <Spinner
@@ -92,13 +92,13 @@
         android:layout_height="0dp"
         android:elevation="2dp"
         android:layout_weight="1"
-        app:layout_constraintRight_toRightOf="@id/et_buy_value"
-        app:layout_constraintBottom_toBottomOf="@id/et_buy_value"
-        app:layout_constraintTop_toTopOf="@id/et_buy_value"
+        app:layout_constraintRight_toRightOf="@id/et_sell_value"
+        app:layout_constraintBottom_toBottomOf="@id/et_sell_value"
+        app:layout_constraintTop_toTopOf="@id/et_sell_value"
         />
 
     <EditText
-        android:id="@+id/et_buy_value"
+        android:id="@+id/et_sell_value"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textIsSelectable="false"

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -27,6 +28,9 @@ import butterknife.ButterKnife;
  * create an instance of this fragment.
  */
 public class ConverterFragment extends Fragment {
+
+    @BindView(R.id.et_sell_value)
+    EditText mSellValue;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -76,6 +80,7 @@ public class ConverterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_converter, container, false);
         ButterKnife.bind(this, view);
+        mSellValue.setKeyListener(null);
         return view;
     }
 

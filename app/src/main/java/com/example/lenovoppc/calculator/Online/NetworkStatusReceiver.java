@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.CountDownTimer;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.lenovoppc.calculator.BuildConfig;
 import com.example.lenovoppc.calculator.MainActivity;
+import com.example.lenovoppc.calculator.Model.Exchange;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,7 +35,8 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
     private TextView mErrorMessage;
     Activity mActivity;
     ProgressBar mProgressBar = null;
-    private static final String API_URL = BuildConfig.API_KEY;
+    private static final String API_ACCESS_KEY = BuildConfig.API_ACCESS_KEY; //add api access skey here or at gradle.properties
+    private static final String PARAM_SYMBOLS = "USD,MXN,JPY,GBP,AUD";
     private static String sCurrentFragment = MainActivity.TAG_CALCULATOR_FRAGMENT;
     private static boolean appOnline = true; //updated var for calling by Fragments
 
@@ -84,11 +87,8 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
                 if(mErrorMessage!=null){
                     mErrorMessage.setVisibility(View.GONE);
                 }
-                try {
-                    run();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                executeCall();
+
             }
         } else {
             Log.d("Network_Avail", "App is offline");
@@ -98,49 +98,42 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
 
     }
 
-    void run() throws IOException {
+    /**
+     * Method uses Retrofit Library to make REST call to API endpoint
+     */
+    void executeCall() {
 
         if(mProgressBar != null) {
             //START LOADING BAR HERE.
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(API_URL)
-                .build();
-
-        client.newCall(request).enqueue(new Callback() {
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.d("test_tag",e.getMessage());
-                call.cancel();
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-
-
-                final String myResponse = response.body().string();
-
-                mActivity.runOnUiThread(new Runnable() {
+        NetworkService.getInstance()
+                .getJSONApi()
+                .getExchanges(API_ACCESS_KEY,PARAM_SYMBOLS)
+                .enqueue(new retrofit2.Callback<Exchange>() {
                     @Override
-                    public void run() {
-
+                    public void onResponse(retrofit2.Call<Exchange> call, retrofit2.Response<Exchange> response) {
+                        Exchange exchange = response.body();
                         if(mProgressBar != null) {
                             //END LOADING BAR HERE
                             mProgressBar.setVisibility(View.GONE);
                         }
                         //TODO: SEND NETWORK RESPONSE TO ViewModel
-                        Log.d("test_tag","response returned");
                         Toast.makeText(mActivity, "Exchange rates updated.", Toast.LENGTH_LONG).show();
 
+                        Log.d("retrofit", "usd is "+exchange.getEx_usd()+"while mexican is "+exchange.getEx_mex());
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<Exchange> call, Throwable t) {
+
+                        Log.e("Retrofit","Error occurred while getting request!");
+                        t.printStackTrace();
                     }
                 });
 
-            }
-        });
+
     }
+
 }
