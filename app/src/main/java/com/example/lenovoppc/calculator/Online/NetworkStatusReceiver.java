@@ -6,12 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lenovoppc.calculator.BuildConfig;
+import com.example.lenovoppc.calculator.MainActivity;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,13 +25,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
+/**
+ * BroadcastReceiver checks for network changes and calls the API EndPoint when online.
+ */
 public class NetworkStatusReceiver extends BroadcastReceiver {
 
+    private TextView mErrorMessage;
     Activity mActivity;
     ProgressBar mProgressBar = null;
-    SwipeRefreshLayout mRefreshLayout;
     private static final String API_URL = BuildConfig.API_KEY;
-    private static boolean appOnline = true; //updated var for calling by Activities
+    private static String sCurrentFragment = MainActivity.TAG_CALCULATOR_FRAGMENT;
+    private static boolean appOnline = true; //updated var for calling by Fragments
 
     public static boolean isAppOnline() {
         return appOnline;
@@ -37,13 +45,18 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
         NetworkStatusReceiver.appOnline = appOnline;
     }
 
-    //Constructor call by MainActivity with progressBar instance
-    public NetworkStatusReceiver(Activity activity, ProgressBar progressBar) {
-        mActivity = activity;
-        mProgressBar = progressBar;
+    public static void setsCurrentFragment(String sCurrentFragment) {
+        NetworkStatusReceiver.sCurrentFragment = sCurrentFragment;
     }
 
+    //Constructor call by MainActivity with progressBar and errormessage instance
+    public NetworkStatusReceiver(Activity activity, ProgressBar progressBar, TextView errorMessage) {
+        mActivity = activity;
+        mProgressBar = progressBar;
+        mErrorMessage = errorMessage;
+    }
 
+//    Here is what happens when network changes
     @Override
     public void onReceive(Context context, Intent intent) {
 
@@ -66,17 +79,21 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
 
         if(isConnected && isOK) {
             if (wifi.isAvailable() || mobile.isAvailable()) {
+                Log.d("Network_Avail", "App is online");
                 setAppOnline(true);
+                if(mErrorMessage!=null){
+                    mErrorMessage.setVisibility(View.GONE);
+                }
                 try {
                     run();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.d("Network_Avail", "App is online");
             }
         } else {
-            setAppOnline(false);
             Log.d("Network_Avail", "App is offline");
+            setAppOnline(false);
+
         }
 
     }
@@ -84,7 +101,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
     void run() throws IOException {
 
         if(mProgressBar != null) {
-            //START LOADING BAR IF IT HAS BEEN PASSED HERE.
+            //START LOADING BAR HERE.
             mProgressBar.setVisibility(View.VISIBLE);
         }
 
@@ -98,6 +115,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
 
             @Override
             public void onFailure(Call call, IOException e) {
+                Log.d("test_tag",e.getMessage());
                 call.cancel();
             }
 
@@ -107,20 +125,17 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
 
                 final String myResponse = response.body().string();
 
-
                 mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
 
                         if(mProgressBar != null) {
                             //END LOADING BAR HERE
-                            mProgressBar.setVisibility(View.INVISIBLE);
-                        }else{
-                            //ELSE STOP REFRESHING HERE ( in case of {@link WordList} )
-                            mRefreshLayout.setRefreshing(false);
+                            mProgressBar.setVisibility(View.GONE);
                         }
                         //TODO: SEND NETWORK RESPONSE TO ViewModel
-
+                        Log.d("test_tag","response returned");
+                        Toast.makeText(mActivity, "Exchange rates updated.", Toast.LENGTH_LONG).show();
 
                     }
                 });

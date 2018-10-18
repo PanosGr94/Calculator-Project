@@ -1,7 +1,9 @@
 package com.example.lenovoppc.calculator;
 
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
@@ -9,17 +11,31 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import com.example.lenovoppc.calculator.Online.NetworkStatusReceiver;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final static String TAG_CALCULATOR_FRAGMENT = "calc_frag";
+    public final static String TAG_CALCULATOR_FRAGMENT = "calc_frag";
+    public final static String TAG_CONVERTER_FRAGMENT = "conv_frag";
     public static final String LOG_TAG = "MAINACTIVITY_TAG";
     private FragmentTransaction fragmentTransaction;
     private FragmentManager fragmentManager;
     private CalculatorFragment calculatorFragment;
     boolean doubleBackToExitPressedOnce = false;
 
+
+    private NetworkStatusReceiver mNSR;
+    @BindView(R.id.pb_loadingbar)
+    ProgressBar mProgressBar;
+    @BindView(R.id.tv_error_message)
+    TextView mErrorMessage;
 
 
     /**
@@ -33,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_calculator:
+
+                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CALCULATOR_FRAGMENT); }
+
                     /*Replace the calculator fragment with the one previously created*/
                     calculatorFragment = (CalculatorFragment) fragmentManager.findFragmentByTag(TAG_CALCULATOR_FRAGMENT);
                     if(calculatorFragment!=null){
@@ -47,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                     return true;
                 case R.id.navigation_convertor:
+
+                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CONVERTER_FRAGMENT); }
+
                     /*Replace the calculator Fragment with the converter Fragment*/
                     ConverterFragment converterFragment = new ConverterFragment();
                     fragmentTransaction.replace(R.id.fl_fragment_container,converterFragment);
@@ -63,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        ButterKnife.bind(this);
+
         /*Instantiate the calculator fragment*/
         fragmentManager = getSupportFragmentManager();
         fragmentTransaction = fragmentManager.beginTransaction();
@@ -74,13 +98,50 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        //(1)Broadcast receiver instance
+        mNSR = new NetworkStatusReceiver(MainActivity.this,mProgressBar,mErrorMessage);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        //(2) Broadcast Receiver Register
+        registerReceiver(mNSR, intentFilter);
+
+
         /*Code for bottom navigation*/
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //(3) Broadcast Receiver Unregister. Tried in onPause but crashes bc BR not registered anymore
+        unregisterReceiver(mNSR);
+    }
 
-/*
+    /**
+     * Helper Method to manage the system message for offline status
+     * @param fragment which fragment the user is on
+     */
+    private void notifyOffline(String fragment) {
+        NetworkStatusReceiver.setsCurrentFragment(fragment);
+        mErrorMessage.setVisibility(View.VISIBLE);
+        //if message is on calculator remove after 2s.
+        if(fragment.equals(TAG_CALCULATOR_FRAGMENT)) {
+            CountDownTimer countDownTimerStatic = new CountDownTimer(2000, 16) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                }
+
+                @Override
+                public void onFinish() {
+                    mErrorMessage.setVisibility(View.GONE);
+                }
+            };
+            countDownTimerStatic.start();
+        }
+    }
+
+    /*
     Method for double click to exit
 */
  /*   @Override
