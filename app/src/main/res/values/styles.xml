@@ -10,6 +10,16 @@
         <item name="fontFamily">@font/customfont</item>
     </style>
 
+    <style name="EditTextCustom" parent="Base.Widget.AppCompat.EditText">
+
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:inputType">numberDecimal</item>
+        <item name="android:gravity">center|end</item>
+        <item name="android:textSize">48sp</item>
+        <item name="android:hint">1210</item>
+        <item name="android:textColorHint">@color/colorText</item>
+        <item name="backgroundTint">@color/colorAccent</item>
 
 
+    </style>
 </resources>

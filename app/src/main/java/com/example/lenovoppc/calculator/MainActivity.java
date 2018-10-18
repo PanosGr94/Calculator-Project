@@ -1,6 +1,7 @@
 package com.example.lenovoppc.calculator;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
@@ -17,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private FragmentTransaction fragmentTransaction;
     private FragmentManager fragmentManager;
     private CalculatorFragment calculatorFragment;
+    boolean doubleBackToExitPressedOnce = false;
+
 
 
     /**
@@ -34,16 +37,20 @@ public class MainActivity extends AppCompatActivity {
                     calculatorFragment = (CalculatorFragment) fragmentManager.findFragmentByTag(TAG_CALCULATOR_FRAGMENT);
                     if(calculatorFragment!=null){
                         fragmentTransaction.replace(R.id.fl_fragment_container,calculatorFragment);
+//                        fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                     }else{
-                        Log.e(LOG_TAG, "Calc frag is null");
+                        Log.d(LOG_TAG, "Calc frag is null");
+                        calculatorFragment = new CalculatorFragment();
+                        fragmentTransaction.replace(R.id.fl_fragment_container, calculatorFragment,TAG_CALCULATOR_FRAGMENT);
+                        fragmentTransaction.commit();
                     }
                     return true;
                 case R.id.navigation_convertor:
                     /*Replace the calculator Fragment with the converter Fragment*/
                     ConverterFragment converterFragment = new ConverterFragment();
                     fragmentTransaction.replace(R.id.fl_fragment_container,converterFragment);
-                    fragmentTransaction.addToBackStack(null);
+//                    fragmentTransaction.addToBackStack(null);
                     fragmentTransaction.commit();
                     return true;
             }
@@ -61,9 +68,10 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction = fragmentManager.beginTransaction();
 
         calculatorFragment = new CalculatorFragment();
-        fragmentTransaction.add(R.id.fl_fragment_container, calculatorFragment,TAG_CALCULATOR_FRAGMENT);
-        fragmentTransaction.addToBackStack(null); //to resume fragment and not destroy
+        fragmentTransaction.replace(R.id.fl_fragment_container, calculatorFragment,TAG_CALCULATOR_FRAGMENT);
+//        fragmentTransaction.addToBackStack(null); //to resume fragment and not destroy
         fragmentTransaction.commit();
+
 
 
         /*Code for bottom navigation*/
@@ -71,4 +79,28 @@ public class MainActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+
+/*
+    Method for double click to exit
+*/
+ /*   @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+//            fragmentManager.popBackStackImmediate();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
+    }
+*/
 }

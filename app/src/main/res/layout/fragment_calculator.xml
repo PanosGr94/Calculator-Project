@@ -23,11 +23,13 @@
         app:layout_constraintBottom_toTopOf="@id/tv_history"
         >
 
-        <Spinner
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_gravity="center"
+            android:text="€"
+            android:textSize="48sp"
+            android:gravity="center"
             />
 
         <TextView
@@ -36,15 +38,14 @@
             android:layout_height="match_parent"
             android:text="1248"
             android:gravity="center|end"
-            android:textColor="@android:color/background_dark"
             android:textSize="48sp"
+            android:textColor="@android:color/background_dark"
             android:layout_weight="5" />
 
         <ImageButton
             android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_gravity="center"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_dashboard_exchange"
             />

@@ -19,11 +19,15 @@
         app:layout_constraintVertical_chainStyle="packed"
         >
 
-        <Spinner
-            android:id="@+id/sp_currency"
+
+        <TextView
+            android:id="@+id/tv_currency"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:text="€"
+            android:textSize="32sp"
+            android:gravity="center"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_result"
             app:layout_constraintBottom_toBottomOf="@id/tv_result"
@@ -40,7 +44,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/tv_history"
             app:layout_constraintRight_toLeftOf="@id/ib_exchange"
-            app:layout_constraintLeft_toRightOf="@id/sp_currency"
+            app:layout_constraintLeft_toRightOf="@id/tv_currency"
             />
 
         <ImageButton

@@ -30,4 +30,12 @@
 
     <!-- Convertor Text -->
     <string name="conv_frag_text">Converter fragment!!</string>
+
+    <string-array name="currencies">
+        <item>USD($)</item>
+        <item>EUR(€)</item>
+        <item>JPY(¥)</item>
+        <item>GBP(£)</item>
+        <item>AUD(A$)</item>
+    </string-array>
 </resources>
