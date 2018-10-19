@@ -4,33 +4,35 @@
     <string name="title_convertor">Currency</string>
 
     <!-- Calculator Text -->
-    <string name="calc_frag_text">248*6–156</string>
+    <string name="calc_frag_text"> </string>
+    <string name="offline_error_message">App offline, please connect to internet to view exchange.</string>
+    <string name="euro">€</string>
+    <string name="exchange_button">exchange icon</string>
+    <string name="zero">0</string>
     <string-array name="calculator_contents">
-        <item>DEL</item>
-        <item>√</item>
-        <item>%</item>
-        <item>÷</item>
         <item>7</item>
         <item>8</item>
         <item>9</item>
-        <item>×</item>
+        <item>X</item>
         <item>4</item>
         <item>5</item>
         <item>6</item>
-        <item>-</item>
+        <item>÷</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
-        <item>+</item>
+        <item>-</item>
         <item>.</item>
         <item>0</item>
         <item>AC</item>
-        <item>=</item>
+        <item>+</item>
     </string-array>
 
     <!-- Convertor Text -->
     <string name="conv_frag_text">Converter fragment!!</string>
-
+    <string name="null_data_error_message"> Data has not been downloaded </string>
+    <string name="buy">BUY</string>
+    <string name="sell">SELL</string>
     <string-array name="currencies">
         <item>USD($)</item>
         <item>MXN($)</item>

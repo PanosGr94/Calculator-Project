@@ -53,7 +53,10 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_calculator:
 
-                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CALCULATOR_FRAGMENT, mErrorMessage); }
+                    if (!NetworkStatusReceiver.isAppOnline()) {
+                        notifyOffline(TAG_CALCULATOR_FRAGMENT,
+                                mErrorMessage, getResources().getString(R.string.offline_error_message));
+                    }
 
                     /*Replace the calculator fragment with the one previously created*/
                     calculatorFragment = (CalculatorFragment) fragmentManager.findFragmentByTag(TAG_CALCULATOR_FRAGMENT);
@@ -70,7 +73,10 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_convertor:
 
-                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CONVERTER_FRAGMENT, mErrorMessage); }
+                    if (!NetworkStatusReceiver.isAppOnline()) {
+                        notifyOffline(TAG_CONVERTER_FRAGMENT,
+                                mErrorMessage, getResources().getString(R.string.offline_error_message));
+                    }
 
                     /*Replace the calculator Fragment with the converter Fragment*/
                     ConverterFragment converterFragment = new ConverterFragment();
@@ -126,8 +132,8 @@ public class MainActivity extends AppCompatActivity {
      * Static because it's also notified from inside {@link CalculatorFragment} when it is replaced
      * @param fragment which fragment the user is on
      */
-    public static void notifyOffline(String fragment, final TextView mErrorMessage) {
-        NetworkStatusReceiver.setsCurrentFragment(fragment);
+    public static void notifyOffline(String fragment, final TextView mErrorMessage, String error_text) {
+        mErrorMessage.setText(error_text);
         mErrorMessage.setVisibility(View.VISIBLE);
         //if message is on calculator remove after 2s.
         if(fragment.equals(TAG_CALCULATOR_FRAGMENT)) {

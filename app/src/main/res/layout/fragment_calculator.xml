@@ -9,14 +9,14 @@
     android:layout_height="match_parent"
     tools:context=".CalculatorFragment">
 
-    <!-- TODO: Send strings to strings.xml -->
+
     <LinearLayout
         android:id="@+id/ll_convert"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:weightSum="7"
-        android:layout_weight="1"
+        android:layout_weight="1.8"
         android:background="@android:color/white"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="€"
+            android:text="@string/euro"
             android:textSize="48sp"
             android:gravity="center"
             />
@@ -36,7 +36,7 @@
             android:id="@+id/tv_result"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="1248"
+            android:hint="@string/zero"
             android:gravity="center|end"
             android:textSize="48sp"
             android:textColor="@android:color/background_dark"
@@ -50,6 +50,7 @@
             android:tint="@color/colorAccent"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_dashboard_exchange"
+            android:contentDescription="@string/exchange_button"
             />
 
 
@@ -59,9 +60,9 @@
         android:id="@+id/tv_history"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5"
-        android:layout_marginRight="16dp"
-        android:text="@string/calc_frag_text"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
+        android:hint="@string/calc_frag_text"
         android:gravity="center|end"
         android:textSize="24sp"
         app:layout_constraintTop_toBottomOf="@id/ll_convert"
@@ -72,7 +73,7 @@
         android:id="@+id/rv_buttons"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5.5"
+        android:layout_weight="4.2"
         tools:listItem="@layout/item_button"
         android:background="@color/colorBackground"
         android:paddingLeft="2dp"

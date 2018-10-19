@@ -7,6 +7,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:textSize="20sp"
     android:gravity="center"
-    android:textColor="@color/colorAccent"
+    android:textColor="@color/colorText"
     android:padding="5dip"
     tools:text="Test" />
