@@ -47,6 +47,7 @@ public class CalculatorFragment extends Fragment {
 
     public void setResult(String resultString) {
         mResult.setText(resultString);
+        viewModel.updateValue(resultString);
     }
 
     public void setHistory(String updatedHistory) {
@@ -70,6 +71,8 @@ public class CalculatorFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_calculator, container, false);
         ButterKnife.bind(this, view);
+        //use the sharedviewmodel to update data on ConverterFragment Edittext
+        viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
         //turn off scrolling for recycleview
         GridLayoutManager gridLayoutManager = new GridLayoutManager(container.getContext(), SPAN_COUNT){
             @Override
@@ -79,10 +82,9 @@ public class CalculatorFragment extends Fragment {
         };
         mButtonsRV.setLayoutManager(gridLayoutManager);
         //create a new adapter instance
-        CalculatorAdapter calculatorAdapter = new CalculatorAdapter(setUpCalculator(), getResources(), this);
+        CalculatorAdapter calculatorAdapter = new CalculatorAdapter(setUpCalculator(), getResources(), this, viewModel);
         mButtonsRV.setAdapter(calculatorAdapter);
-        //use the sharedviewmodel to update data on ConverterFragment Edittext
-        viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+
         mExchange.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
