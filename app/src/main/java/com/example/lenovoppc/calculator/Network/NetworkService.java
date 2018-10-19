@@ -1,4 +1,4 @@
-package com.example.lenovoppc.calculator.Online;
+package com.example.lenovoppc.calculator.Network;
 
 import com.example.lenovoppc.calculator.Model.Exchange;
 import com.google.gson.Gson;

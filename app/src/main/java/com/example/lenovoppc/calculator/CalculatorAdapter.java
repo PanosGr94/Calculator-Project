@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
+//TODO: MAYBE IMPLEMENT WITH GRIDVIEW/LAYOUT?
 public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.NumberViewHolder> {
 
     private ArrayList<NumberButton> layoutContents;

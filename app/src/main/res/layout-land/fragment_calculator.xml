@@ -53,6 +53,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:layout_gravity="center"
+            android:tint="@color/colorAccent"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_dashboard_exchange"
             app:layout_constraintRight_toRightOf="parent"

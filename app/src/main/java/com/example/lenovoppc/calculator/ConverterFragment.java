@@ -1,19 +1,27 @@
 package com.example.lenovoppc.calculator;
 
-import android.content.Context;
-import android.content.IntentFilter;
-import android.net.ConnectivityManager;
-import android.net.Uri;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.lenovoppc.calculator.Online.NetworkStatusReceiver;
+import com.example.lenovoppc.calculator.Model.Exchange;
+import com.example.lenovoppc.calculator.Model.ExchangeViewModel;
+import com.example.lenovoppc.calculator.Model.SharedViewModel;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -21,57 +29,33 @@ import butterknife.ButterKnife;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ConverterFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ConverterFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Uses {@link com.example.lenovoppc.calculator.Model.SharedViewModel} to share data.
  */
 public class ConverterFragment extends Fragment {
 
     @BindView(R.id.et_sell_value)
     EditText mSellValue;
+    @BindView(R.id.et_buy_value)
+    EditText mBuyValue;
+    @BindView(R.id.sp_currency)
+    Spinner mCurrencies;
+    @BindView(R.id.tv_sell_currency)
+    TextView mSellSign;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
+    private Exchange mExchange;
+    private String currencySign;
+    private int curAtPos;
 
     public ConverterFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ConverterFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ConverterFragment newInstance(String param1, String param2) {
-        ConverterFragment fragment = new ConverterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
+
+
     }
 
     @Override
@@ -80,46 +64,122 @@ public class ConverterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_converter, container, false);
         ButterKnife.bind(this, view);
+
+        //setupSpinner
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        mSellSign.setText("$");
+        curAtPos = 0;
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(view.getContext(),
+                R.array.currencies, R.layout.spinner_item);
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mCurrencies.setAdapter(adapter);
+
+        mCurrencies.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateSign(parent.getItemAtPosition(position).toString());
+                curAtPos = position;
+                updateSellValue(mBuyValue.getText().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        //User input on change listener
+        mBuyValue.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()>0) updateSellValue(s.toString());
+                else if(s.length()==0) {
+                    updateSellValue("0.0");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        //Online results on change listener
+        ExchangeViewModel exchangeViewModel = ViewModelProviders.of(getActivity()).get(ExchangeViewModel.class);
+        exchangeViewModel.getNewExchangeRates().observe(this, new Observer<Exchange>() {
+            @Override
+            public void onChanged(@Nullable Exchange exchange) {
+                mExchange = exchange;
+            }
+        });
+
+        //Calculator input on change listener
+        SharedViewModel viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
+        viewModel.getValueToExchange().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                mBuyValue.setText(s);
+                updateSellValue(s);
+            }
+        });
+
+        //make editText not editable
         mSellValue.setKeyListener(null);
+
+
+
         return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+    private void updateSign(String selectedCurrency) {
+        char[] currencySignArray = selectedCurrency.toCharArray();
+        currencySign = String.valueOf(currencySignArray[currencySignArray.length-2]);
+        mSellSign.setText(currencySign);
+    }
+
+    private void updateSellValue(String s) {
+        //calculate and round result to 2 decimals
+        double userValue = Double.parseDouble(s);
+        double result;
+
+        switch (curAtPos){
+            case 0:
+                result =  userValue*mExchange.getEx_usd();
+                break;
+            case 1:
+                result =  userValue*mExchange.getEx_mex();
+                break;
+            case 2:
+                result =  userValue*mExchange.getEx_jap();
+                break;
+            case 3:
+                result =  userValue*mExchange.getEx_gbp();
+                break;
+            case 4:
+                result =  userValue*mExchange.getEx_aus();
+                break;
+            default:
+                result =  userValue*mExchange.getEx_usd();
+                break;
+
         }
+
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.CEILING);
+        //get the currency sign from the spinner option selected by user
+        StringBuilder sb = new StringBuilder("  ");
+        sb = sb.append(df.format(result));
+        mSellValue.setText(sb);
+
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
-    }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
 }

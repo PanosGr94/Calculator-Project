@@ -1,13 +1,13 @@
-package com.example.lenovoppc.calculator.Online;
+package com.example.lenovoppc.calculator.Network;
 
 import android.app.Activity;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.CountDownTimer;
-import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -17,15 +17,8 @@ import android.widget.Toast;
 import com.example.lenovoppc.calculator.BuildConfig;
 import com.example.lenovoppc.calculator.MainActivity;
 import com.example.lenovoppc.calculator.Model.Exchange;
-
-import java.io.IOException;
-import java.util.ArrayList;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.example.lenovoppc.calculator.Model.ExchangeViewModel;
+import com.example.lenovoppc.calculator.Model.SharedViewModel;
 
 /**
  * BroadcastReceiver checks for network changes and calls the API EndPoint when online.
@@ -119,7 +112,10 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
                             //END LOADING BAR HERE
                             mProgressBar.setVisibility(View.GONE);
                         }
-                        //TODO: SEND NETWORK RESPONSE TO ViewModel
+                        ExchangeViewModel exchangeViewModel;
+                        exchangeViewModel = ViewModelProviders.of((MainActivity)mActivity).get(ExchangeViewModel.class);
+                        exchangeViewModel.updateRates(exchange);
+
                         Toast.makeText(mActivity, "Exchange rates updated.", Toast.LENGTH_LONG).show();
 
                         Log.d("retrofit", "usd is "+exchange.getEx_usd()+"while mexican is "+exchange.getEx_mex());

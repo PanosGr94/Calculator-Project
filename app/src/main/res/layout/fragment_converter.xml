@@ -7,7 +7,44 @@
     android:background="@color/colorBackground"
     tools:context=".ConverterFragment">
 
-    <!-- TODO: Send strings to strings.xml -->
+    <View
+        android:id="@+id/view_top"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/colorText"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/ib_switch"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_label_sell"
+
+        />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/colorText"
+        app:layout_constraintLeft_toRightOf="@id/ib_switch"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/view_top"
+        app:layout_constraintBottom_toBottomOf="@id/view_top"
+        />
+
+
+    <ImageView
+        android:id="@+id/ib_switch"
+        android:layout_width="48dp"
+        android:padding="8dp"
+        android:layout_height="48dp"
+        android:scaleType="fitStart"
+        android:src="@drawable/ic_dashboard_exchange"
+        android:tint="@color/colorAccent"
+        android:background="@drawable/roundedcorners"
+        app:layout_constraintRight_toRightOf="@id/guideline_end"
+        app:layout_constraintTop_toTopOf="@id/view_top"
+        app:layout_constraintBottom_toBottomOf="@id/view_top"
+        />
+
+    <!-- TODO: Send strings to strings.xml and create land -->
     <TextView
         android:id="@+id/tv_label_sell"
         android:layout_width="wrap_content"
@@ -52,26 +89,40 @@
 
 
     <View
-        android:id="@+id/view_separator"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/colorText"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@id/ib_switch"
-        app:layout_constraintTop_toBottomOf="@id/et_buy_value"
-        app:layout_constraintBottom_toTopOf="@id/tv_label_buy"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintLeft_toLeftOf="@id/guideline"
+        app:layout_constraintRight_toLeftOf="@id/view_separator"
+        app:layout_constraintTop_toTopOf="@id/view_separator"
+        app:layout_constraintBottom_toBottomOf="@id/view_separator"
 
         />
 
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/colorText"
-        app:layout_constraintLeft_toRightOf="@id/ib_switch"
-        app:layout_constraintRight_toRightOf="parent"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintLeft_toRightOf="@id/view_separator"
+        app:layout_constraintRight_toRightOf="@id/guideline_end"
         app:layout_constraintTop_toTopOf="@id/view_separator"
         app:layout_constraintBottom_toBottomOf="@id/view_separator"
         />
+
+    <ImageView
+        android:id="@+id/view_separator"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:padding="8dp"
+        android:src="@drawable/two_way"
+        android:tint="@color/colorPrimaryDark"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_buy_value"
+        app:layout_constraintBottom_toTopOf="@id/tv_label_buy"
+
+        />
+
 
     <TextView
         android:id="@+id/tv_label_buy"
@@ -90,11 +141,11 @@
         android:id="@+id/sp_currency"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:elevation="2dp"
         android:layout_weight="1"
-        app:layout_constraintRight_toRightOf="@id/et_sell_value"
+        app:layout_constraintLeft_toRightOf="@id/et_sell_value"
         app:layout_constraintBottom_toBottomOf="@id/et_sell_value"
         app:layout_constraintTop_toTopOf="@id/et_sell_value"
+        android:spinnerMode="dialog"
         />
 
     <EditText
@@ -109,23 +160,24 @@
         app:layout_constraintTop_toBottomOf="@id/tv_label_buy"
         app:layout_constraintBottom_toBottomOf="parent"
         android:maxLength="9"
-        android:hint="-"
         android:paddingLeft="16dp"
         android:layout_marginLeft="32dp"
-        android:layout_marginRight="64dp"
+        android:layout_marginRight="88dp"
         />
 
-    <ImageButton
-        android:id="@+id/ib_switch"
-        android:layout_width="64dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_dashboard_exchange"
-        android:tint="@color/colorAccent"
-        android:background="@drawable/roundedcorners"
-        app:layout_constraintRight_toRightOf="@id/guideline_labels"
-        app:layout_constraintTop_toTopOf="@id/view_separator"
-        app:layout_constraintBottom_toBottomOf="@id/view_separator"
+    <TextView
+        android:id="@+id/tv_sell_currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        tools:text="$"
+        android:textColor="@color/colorText"
+        android:textSize="48sp"
+        app:layout_constraintLeft_toLeftOf="@id/et_sell_value"
+        app:layout_constraintBottom_toBottomOf="@id/et_sell_value"
+        app:layout_constraintTop_toTopOf="@id/et_sell_value"
         />
+
 
     <android.support.constraint.Guideline
         android:id="@+id/guideline"

@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     tools:context=".CalculatorFragment">
 
-    <!-- TODO: Update calculator fragment layout -->
+    <!-- TODO: Send strings to strings.xml -->
     <LinearLayout
         android:id="@+id/ll_convert"
         android:layout_width="match_parent"
@@ -43,9 +43,11 @@
             android:layout_weight="5" />
 
         <ImageButton
+            android:id="@+id/ib_exchange"
             android:layout_width="48dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:tint="@color/colorAccent"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_dashboard_exchange"
             />

@@ -4,6 +4,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
@@ -14,12 +15,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.lenovoppc.calculator.Online.NetworkStatusReceiver;
+import com.example.lenovoppc.calculator.Network.NetworkStatusReceiver;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+//TODO: CHECK OUT IF VIEWPAGER IS APPLICABLE
 public class MainActivity extends AppCompatActivity {
 
     public final static String TAG_CALCULATOR_FRAGMENT = "calc_frag";
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_calculator:
 
-                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CALCULATOR_FRAGMENT); }
+                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CALCULATOR_FRAGMENT, mErrorMessage); }
 
                     /*Replace the calculator fragment with the one previously created*/
                     calculatorFragment = (CalculatorFragment) fragmentManager.findFragmentByTag(TAG_CALCULATOR_FRAGMENT);
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 case R.id.navigation_convertor:
 
-                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CONVERTER_FRAGMENT); }
+                    if(!NetworkStatusReceiver.isAppOnline()){ notifyOffline(TAG_CONVERTER_FRAGMENT, mErrorMessage); }
 
                     /*Replace the calculator Fragment with the converter Fragment*/
                     ConverterFragment converterFragment = new ConverterFragment();
@@ -120,9 +123,10 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Helper Method to manage the system message for offline status
+     * Static because it's also notified from inside {@link CalculatorFragment} when it is replaced
      * @param fragment which fragment the user is on
      */
-    private void notifyOffline(String fragment) {
+    public static void notifyOffline(String fragment, final TextView mErrorMessage) {
         NetworkStatusReceiver.setsCurrentFragment(fragment);
         mErrorMessage.setVisibility(View.VISIBLE);
         //if message is on calculator remove after 2s.
@@ -141,10 +145,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /*
+/*
     Method for double click to exit
 */
- /*   @Override
+
+    @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
@@ -163,5 +168,4 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 2000);
     }
-*/
 }
