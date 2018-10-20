@@ -1,6 +1,7 @@
 # Calculator-Project
 A simple calculator and a currency convertor to 5 international big currencies 
 
+<a href="https://ibb.co/dobqLf"><img src="https://preview.ibb.co/eTuMRL/Calculator-Cover.png" alt="Calculator-Cover" border="0"></a>
 
 ### Android Libraries Used:
 
