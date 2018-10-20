@@ -28,7 +28,8 @@ public class NetworkStatusReceiver extends BroadcastReceiver {
     private TextView mErrorMessage;
     Activity mActivity;
     ProgressBar mProgressBar = null;
-    private static final String API_ACCESS_KEY = BuildConfig.API_ACCESS_KEY; //add api access skey here or at gradle.properties
+    //add api access key here or at gradle.properties
+    private static final String API_ACCESS_KEY = BuildConfig.API_ACCESS_KEY;
     private static final String PARAM_SYMBOLS = "USD,MXN,JPY,GBP,AUD";
     private static boolean appOnline = true; //updated var for calling by Fragments
     private static Exchange exchange = null;

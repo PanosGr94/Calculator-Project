@@ -26,30 +26,29 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
     private Resources resources;
     ArrayList<Double> toCalculate;
     private CalculatorFragment calculatorInstance;
-    private SharedViewModel viewModel;
+    //for managing operations
     private StringBuilder stringBuilder;
-    private int[] parenthesis;
-    private int open;
-    private String operationHeld;
-    private int posLastOperation;
-    private int hasBeenAdded, currentPosition; //for managing operations
-    private double resultScreen;
-    private String newOperandFlag;
-    private double currTotal;
+    private String operationHeld;   //operation that will be done when 2 values have been written
+    private int posLastOperation;  //spot where last operand was
+    private int currentPosition;  //latest mHistory position
+    private double resultScreen; //value that should be on mResult
+    private double currTotal;   //value being calculated continuously
 
-    public CalculatorAdapter(ArrayList<NumberButton> layoutContents, Resources resources, CalculatorFragment calculatorInstance, SharedViewModel viewModel) {
+    public CalculatorAdapter(ArrayList<NumberButton> layoutContents, Resources resources,
+                             CalculatorFragment calculatorInstance) {
         this.layoutContents = layoutContents;
         this.resources = resources;
         this.calculatorInstance = calculatorInstance;
-        this.viewModel = viewModel;
         stringBuilder = new StringBuilder();
         operationHeld = "first"; //value given for init purposes
-        currentPosition = hasBeenAdded = 0;
+        currentPosition = 0;
         toCalculate = new ArrayList<Double>();
-        open = 0;
-        parenthesis = new int[10];
     }
 
+    @Override
+    public int getItemCount() {
+        return layoutContents.size();
+    }
 
     @NonNull
     @Override
@@ -68,6 +67,8 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
         final String type = layoutContents.get(i).getType();
         numberViewHolder.mNumber.setText(value);
 
+
+        //change keyboard background colors depending on type
         if (type.equals(CalculatorFragment.OPERATION)) {
             numberViewHolder.mButton.setCardBackgroundColor(resources.getColor(R.color.colorPrimaryDark));
         }else if(type.equals(CalculatorFragment.NUMBER)||type.equals(CalculatorFragment.DOT)){
@@ -89,8 +90,8 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
      * NUMBER, DOT AND FUNCTION mostly handle the ui side and affect the length of the string
      * OPERATION will actually add to or remove from history
      *
-     * @param value
-     * @param type
+     * @param value the value of the key pressed
+     * @param type the type of the key pressed from {@link CalculatorFragment}
      */
     private void checkAndAdd(String value, String type) {
         DecimalFormat df = new DecimalFormat("#.##");
@@ -100,13 +101,15 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
             case CalculatorFragment.NUMBER:
                 stringBuilder = stringBuilder.append(value);
                 currentPosition = stringBuilder.length();
+                //restart the current calculation everytime a new number is added
                 currTotal = 0;
-
-                if (operationHeld.equals("first")) { //no other operations have been pressed
+                //if no other operations have been made
+                if (operationHeld.equals("first")) {
                     resultScreen = Double.parseDouble(stringBuilder.toString());
                     currTotal = resultScreen;
                     calculatorInstance.setResult(df.format(resultScreen));
-                } else { //some operation has been pressed on the numbers
+                } else { //if some operation have been made
+                    //calculate the latest result and add it to mResult
                     currTotal = calculate(operationHeld);
                     calculatorInstance.setResult(df.format(currTotal));
                 }
@@ -125,27 +128,21 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
                 }
                 break;
             case CalculatorFragment.OPERATION:
-                //if a new operation is starting, update the total now so it doesn't disappear.
+                //if a new operation is starting, update mResult value now so it doesn't disappear.
                 resultScreen = currTotal;
-                stringBuilder = stringBuilder.append(value);
-                currentPosition = stringBuilder.length();
-
+                //add spaces formatting for beauty
+                stringBuilder = stringBuilder.append(" ").append(value).append(" ");
+                //add the 2 spaces to current position count
+                currentPosition = stringBuilder.length() + 2;
+                //update the mHistory string
                 calculatorInstance.setHistory(stringBuilder.toString());
+                //save the latest operand for when a new number arrives!
                 operationHeld = value;
-                posLastOperation = stringBuilder.length();
-                Log.d("strbld", "position of latest operation is "
-                        + posLastOperation + ", operationHeld is " + operationHeld);
-
-
-//                calculate(value); //add the value and the operand to array of operations
-
-//                newOperandFlag = value; //the change of operand creates a new array addition
+                //keep the position of the latest operand without the added space
+                posLastOperation = stringBuilder.length() - 1;
                 break;
 
         }
-
-//        if(newOperandFlag !=null)
-
 
     }
 
@@ -160,6 +157,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
 
         String newUserValue = stringBuilder.substring(posLastOperation, currentPosition);
         newUserValue = newUserValue.trim();
+        //turn string into a double to operate
         double newDoubValue = Double.parseDouble(newUserValue);
         switch (operand) {
             case "+":
@@ -179,146 +177,6 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
         return newDoubValue;
     }
 
-
-    /**
-     * Simple helper method to clear all the variables when "AC" is used
-     */
-    private void clearComputer() {
-        hasBeenAdded = 0;
-        operationHeld = "first";
-        stringBuilder = new StringBuilder("");
-        calculatorInstance.setResult("0");
-        calculatorInstance.setHistory("0");
-        toCalculate.clear();
-    }
-
-    /*  Log.d("strbld", "hasbeenadded " + hasBeenAdded + " crps " + currentPosition);
-
-     */
-/*
-        toCalculate.add(new NumberButton(trimmedSubstring,CalculatorFragment.NUMBER));
-//            resultScreen = (double)toCalculate.get(0);
-        int indexOfLast = toCalculate.size()-1;
-        Log.d("strbld", "last saved value is: " + toCalculate.get(indexOfLast).getValue()+"while size is "+toCalculate.size());
-        operationHeld = operand;
-
-        if(operand.equals("=")){
-            fetchResult();
-            return;
-        }else {
-            toCalculate.add(new NumberButton(operand, CalculatorFragment.OPERATION));
-            hasBeenAdded = currentPosition;//adds the spaces and the symbol which have just been added
-        }
-         /*
-
-
-
-        *//* this arraylist has the numbers to be taken into account.
-     *  if the numbers have been added or have not been created the arrayList will be empty
-     */
-        /*if (toCalculate.isEmpty()) {
-            Log.d("strbld", "al is empty");
-            //Double.parseDouble(substringToArray)
-            toCalculate.add(valueToArray);
-            resultScreen = toCalculate.get(0);
-            int indexOfLast = toCalculate.size() - 1;
-            Log.d("strbld", "last saved value is: " + toCalculate.get(indexOfLast).toString() + "while size is " + toCalculate.size());
-            hasBeenAdded = currentPosition;
-            operationHeld = operand;
-        } else {
-            toCalculate.add(valueToArray);
-            int indexOfLast = toCalculate.size() - 1;
-            Log.d("strbld", "last saved value is: " + toCalculate.get(indexOfLast).toString() + "while size is " + toCalculate.size());
-            hasBeenAdded = currentPosition;
-            switch (operationHeld) {
-                case "+":
-                    Log.d("strbld", "adding " + resultScreen + " + " + toCalculate.get(indexOfLast));
-                    resultScreen = resultScreen + toCalculate.get(indexOfLast);
-                    calculatorInstance.setResult(String.valueOf(resultScreen));
-                    Log.d("strbld", "new currTotal is " + resultScreen);
-                    break;
-                case "-":
-                    Log.d("strbld", "adding " + resultScreen + " - " + toCalculate.get(indexOfLast));
-                    resultScreen = resultScreen - toCalculate.get(indexOfLast);
-                    calculatorInstance.setResult(String.valueOf(resultScreen));
-                    Log.d("strbld", "new currTotal is " + resultScreen);
-                    break;
-                case "X":
-                    Log.d("strbld", "adding " + resultScreen + " * " + toCalculate.get(indexOfLast));
-                    resultScreen = resultScreen * toCalculate.get(indexOfLast);
-                    calculatorInstance.setResult(String.valueOf(resultScreen));
-                    Log.d("strbld", "new currTotal is " + resultScreen);
-                    break;
-                case "÷":
-                    Log.d("strbld", "adding " + resultScreen + " / " + toCalculate.get(indexOfLast));
-                    resultScreen = resultScreen / toCalculate.get(indexOfLast);
-                    calculatorInstance.setResult(String.valueOf(resultScreen));
-                    Log.d("strbld", "new currTotal is " + resultScreen);
-                    break;
-            }
-            operationHeld = operand;
-        }
-*/
-/*
-        if(operand.equals("=")){
-            stringBuilder = new StringBuilder("");
-            toCalculate.clear();
-            operationHeld = null;
-            newOperandFlag = null;
-            return;
-        }
-
-        newOperandFlag = null;*/
-
-
-
-    private void fetchResult() {
-     /*   for(NumberButton item : toCalculate){
-            operationHeld = null;
-            Log.d("strbld item",item.getValue()+", type is :"+item.getType());
-            if(item.getType().equals(CalculatorFragment.OPERATION)) {
-                operationHeld = item.getValue();
-                int indexofItem = toCalculate.indexOf(item);
-                switch (operationHeld){
-                    case "+":
-//                    Log.d("strbld", "adding "+resultScreen +" + "+ toCalculate.get(indexOfLast));
-                        resultScreen = resultScreen + Double.parseDouble(toCalculate.get(indexofItem-1).getValue());
-                        break;
-                    case "-":
-                        Log.d("strbld", "adding "+resultScreen +" - "+ toCalculate.get(indexOfLast));
-                        resultScreen = resultScreen - Double.parseDouble(item.getValue());
-                        break;
-                    case "X":
-                        Log.d("strbld", "adding "+resultScreen +" * "+ toCalculate.get(indexOfLast));
-                        resultScreen = resultScreen * Double.parseDouble(item.getValue());
-                        break;
-                    case "÷":
-                        Log.d("strbld", "adding "+resultScreen +" / "+ toCalculate.get(indexOfLast));
-                        resultScreen = resultScreen / Double.parseDouble(item.getValue());
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }*/
-        /*calculatorInstance.setResult(String.valueOf(resultScreen));
-        Log.d("strbld", "new currTotal is "+resultScreen);
-        */
-
-    }
-
-
-    private boolean isOperator(String lc) {
-        return lc.equals("(") || lc.equals(")") || lc.equals("÷") ||
-                lc.equals("-") || lc.equals("+") || lc.equals("x");
-
-    }
-
-    @Override
-    public int getItemCount() {
-        return layoutContents.size();
-    }
-
     public class NumberViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.tv_button_number)
@@ -331,4 +189,17 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
             ButterKnife.bind(this,itemView);
         }
     }
+
+
+    /**
+     * Simple helper method to clear all the variables when "AC" is used
+     */
+    private void clearComputer() {
+        operationHeld = "first";
+        stringBuilder = new StringBuilder("");
+        calculatorInstance.setResult("0");
+        calculatorInstance.setHistory("0");
+        toCalculate.clear();
+    }
+
 }

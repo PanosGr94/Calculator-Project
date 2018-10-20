@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -43,9 +44,11 @@ public class ConverterFragment extends Fragment {
     Spinner mCurrencies;
     @BindView(R.id.tv_sell_currency)
     TextView mSellSign;
-
+    //Exchange object with latest values
     private Exchange mExchange;
+    //Sign from spinner values
     private String currencySign;
+    //position of spinner
     private int curAtPos;
 
     public ConverterFragment() {
@@ -64,6 +67,17 @@ public class ConverterFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_converter, container, false);
         ButterKnife.bind(this, view);
+
+
+        //If results change , update with this on change listener
+        ExchangeViewModel exchangeViewModel = ViewModelProviders.of(getActivity()).get(ExchangeViewModel.class);
+        exchangeViewModel.getNewExchangeRates().observe(this, new Observer<Exchange>() {
+            @Override
+            public void onChanged(@Nullable Exchange exchange) {
+                mExchange = exchange;
+            }
+        });
+
         //define default text on sell edittext
         mSellSign.setText("$");
         //setupSpinner
@@ -103,7 +117,7 @@ public class ConverterFragment extends Fragment {
                 //if the length of the value is > 0 calculate exchange immediately
                 if(s.length()>0) updateSellValue(s.toString());
                 else if(s.length()==0) {
-                    updateSellValue("0.0");
+                    updateSellValue("0");
                 }
             }
 
@@ -113,14 +127,6 @@ public class ConverterFragment extends Fragment {
             }
         });
 
-        //If results change , update with this on change listener
-        ExchangeViewModel exchangeViewModel = ViewModelProviders.of(getActivity()).get(ExchangeViewModel.class);
-        exchangeViewModel.getNewExchangeRates().observe(this, new Observer<Exchange>() {
-            @Override
-            public void onChanged(@Nullable Exchange exchange) {
-                mExchange = exchange;
-            }
-        });
 
         //Calculator input on change listener
         SharedViewModel viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
@@ -159,7 +165,7 @@ public class ConverterFragment extends Fragment {
         }
         double result;
 
-        if (NetworkStatusReceiver.isDataDownloaded()) {
+        if (NetworkStatusReceiver.isDataDownloaded() && mExchange != null) {
             switch (curAtPos) {
                 case 0:
                     result = userValue * mExchange.getEx_usd();

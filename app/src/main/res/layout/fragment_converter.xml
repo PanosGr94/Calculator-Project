@@ -13,14 +13,14 @@
         android:layout_height="0dp"
         android:background="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/view_sep1"></android.support.constraint.ConstraintLayout>
+        app:layout_constraintTop_toBottomOf="@id/view_separator" />
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/colorText"
-        app:layout_constraintBottom_toBottomOf="@id/view_sep1"
-        app:layout_constraintTop_toTopOf="parent"></android.support.constraint.ConstraintLayout>
+        app:layout_constraintBottom_toBottomOf="@id/view_separator"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <View
@@ -52,8 +52,9 @@
         android:padding="8dp"
         android:layout_height="48dp"
         android:scaleType="fitStart"
-        android:src="@drawable/ic_dashboard_exchange"
+        android:rotation="90"
         android:tint="@color/colorAccent"
+        android:src="@drawable/two_way"
         android:background="@drawable/roundedcorners"
         app:layout_constraintRight_toRightOf="@id/guideline_end"
         app:layout_constraintTop_toTopOf="@id/view_top"
@@ -71,7 +72,7 @@
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/et_buy_value"
-        app:layout_constraintEnd_toEndOf="@id/guideline_labels"
+        app:layout_constraintEnd_toEndOf="@id/guideline_labels_end"
         />
 
     <TextView
@@ -103,44 +104,14 @@
         android:maxLength="9"
         />
 
-
     <View
-        android:id="@+id/view_sep1"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintLeft_toLeftOf="@id/guideline"
-        app:layout_constraintRight_toLeftOf="@id/view_separator"
-        app:layout_constraintTop_toTopOf="@id/view_separator"
-        app:layout_constraintBottom_toBottomOf="@id/view_separator"
-        android:visibility="gone"
-
-        />
-
-    <View
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintLeft_toRightOf="@id/view_separator"
-        app:layout_constraintRight_toRightOf="@id/guideline_end"
-        app:layout_constraintTop_toTopOf="@id/view_separator"
-        app:layout_constraintBottom_toBottomOf="@id/view_separator"
-        android:visibility="gone"
-        />
-
-
-    <ImageView
         android:id="@+id/view_separator"
-        android:layout_width="100dp"
-        android:layout_height="48dp"
-        android:padding="8dp"
-        android:src="@drawable/two_way"
-        android:tint="@color/colorPrimaryDark"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_buy_value"
         app:layout_constraintBottom_toTopOf="@id/tv_label_buy"
-        android:contentDescription="@string/exchange_button"
         android:visibility="gone"
         />
 
@@ -154,7 +125,7 @@
         android:textColor="@color/colorText"
         app:layout_constraintBottom_toTopOf="@id/et_sell_value"
         app:layout_constraintTop_toBottomOf="@id/view_separator"
-        app:layout_constraintLeft_toLeftOf="@id/et_sell_value"
+        app:layout_constraintLeft_toLeftOf="@id/guideline_labels"
          />
 
     <Spinner
@@ -215,8 +186,16 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="16dp" />
 
+
     <android.support.constraint.Guideline
         android:id="@+id/guideline_labels"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="64dp" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline_labels_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"

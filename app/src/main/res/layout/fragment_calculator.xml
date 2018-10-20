@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:weightSum="7"
+    android:weightSum="4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".CalculatorFragment">
@@ -13,10 +13,11 @@
     <LinearLayout
         android:id="@+id/ll_convert"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:weightSum="7"
-        android:layout_weight="1.8"
+        android:layout_weight="2"
+        android:padding="16dp"
+        android:weightSum="6"
         android:background="@android:color/white"
         app:layout_constraintVertical_chainStyle="packed"
         app:layout_constraintTop_toTopOf="parent"
@@ -27,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:textColor="@color/colorPrimaryDark"
             android:text="@string/euro"
             android:textSize="48sp"
             android:gravity="center"
@@ -39,19 +41,9 @@
             android:hint="@string/zero"
             android:gravity="center|end"
             android:textSize="48sp"
-            android:textColor="@android:color/background_dark"
+            android:textColor="@color/colorPrimaryDark"
             android:layout_weight="5" />
 
-        <ImageButton
-            android:id="@+id/ib_exchange"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:tint="@color/colorAccent"
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_dashboard_exchange"
-            android:contentDescription="@string/exchange_button"
-            />
 
 
     </LinearLayout>
@@ -60,11 +52,14 @@
         android:id="@+id/tv_history"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginEnd="16dp"
+        android:background="@color/colorPrimaryDark"
         android:layout_weight="1"
-        android:hint="@string/calc_frag_text"
+        android:elevation="8dp"
+        android:paddingEnd="16dp"
         android:gravity="center|end"
-        android:textSize="24sp"
+        android:textColor="@color/colorText"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/ll_convert"
         app:layout_constraintBottom_toTopOf="@id/rv_buttons"
         />
@@ -72,14 +67,14 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_buttons"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4.2"
-        tools:listItem="@layout/item_button"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:background="@color/colorBackground"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
+        android:paddingLeft="16dp"
+        android:paddingTop="24dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="24dp"
+        tools:listtem="@layout/item_button"
         app:layout_constraintTop_toBottomOf="@id/tv_history"
         app:layout_constraintBottom_toBottomOf="parent"
         />

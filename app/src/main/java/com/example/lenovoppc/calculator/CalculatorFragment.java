@@ -2,6 +2,8 @@ package com.example.lenovoppc.calculator;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -29,15 +31,18 @@ import butterknife.ButterKnife;
  */
 public class CalculatorFragment extends Fragment {
 
+    //keyboard types
     public static final String FUNCTION = "function";
     public static final String OPERATION = "operation";
     public static final String NUMBER = "number";
     public static final String DOT = "dot";
+    //number of rows in keyboard
     public static final int SPAN_COUNT = 4;
+    //parameters for onsaveInstance
+    public static final String BUNDLE_PARAM_RESULT = "param_result";
+    public static final String BUNDLE_PARAM_HISTORY = "param_history";
 
     private SharedViewModel viewModel;
-    @BindView(R.id.ib_exchange)
-    ImageButton mExchange;
     @BindView(R.id.tv_result)
     TextView mResult;
     @BindView(R.id.tv_history)
@@ -45,11 +50,13 @@ public class CalculatorFragment extends Fragment {
     @BindView(R.id.rv_buttons)
     RecyclerView mButtonsRV;
 
+    //update value on screen. called by CalculatorAdapter
     public void setResult(String resultString) {
         mResult.setText(resultString);
         viewModel.updateValue(resultString);
     }
 
+    //update value on mHistory. called by CalculatorAdapter
     public void setHistory(String updatedHistory) {
         mHistory.setText(updatedHistory);
     }
@@ -61,11 +68,6 @@ public class CalculatorFragment extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -74,7 +76,8 @@ public class CalculatorFragment extends Fragment {
         //use the sharedviewmodel to update data on ConverterFragment Edittext
         viewModel = ViewModelProviders.of(getActivity()).get(SharedViewModel.class);
         //turn off scrolling for recycleview
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(container.getContext(), SPAN_COUNT){
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(container.getContext(),
+                SPAN_COUNT) {
             @Override
             public boolean canScrollVertically() {
                 return false;
@@ -82,45 +85,37 @@ public class CalculatorFragment extends Fragment {
         };
         mButtonsRV.setLayoutManager(gridLayoutManager);
         //create a new adapter instance
-        CalculatorAdapter calculatorAdapter = new CalculatorAdapter(setUpCalculator(), getResources(), this, viewModel);
+        CalculatorAdapter calculatorAdapter = new CalculatorAdapter(setUpCalculator(),
+                getResources(), this);
         mButtonsRV.setAdapter(calculatorAdapter);
-
-        mExchange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String currentValue = mResult.getText().toString();
-                viewModel.updateValue(currentValue);
-
-                /*notify {@link MainActivity} that we are replacing Fragments to show
-                   offline message if needed */
-                if(!NetworkStatusReceiver.isAppOnline()){
-                    MainActivity.notifyOffline(MainActivity.TAG_CONVERTER_FRAGMENT,
-                            (TextView) getActivity().findViewById(R.id.tv_error_message),
-                            getResources().getString(R.string.offline_error_message));
-                }
-
-                //when clicked, go to the other fragment
-                FragmentTransaction fragmentTransaction = getActivity().
-                        getSupportFragmentManager().beginTransaction();
-
-                ConverterFragment converterFragment = new ConverterFragment();
-                fragmentTransaction.replace(R.id.fl_fragment_container, converterFragment);
-//                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-
-                //Update bottom navigation tab to highlight the correct tab
-                BottomNavigationView mBtmView = (BottomNavigationView) getActivity().findViewById(R.id.navigation);
-                mBtmView.getMenu().findItem(R.id.navigation_convertor).setChecked(true);
-
-            }
-        });
 
         return view;
     }
 
+    //configuration changes saved here
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(BUNDLE_PARAM_RESULT, mResult.getText().toString());
+        outState.putString(BUNDLE_PARAM_HISTORY, mHistory.getText().toString());
+    }
+
+    //configuration changes retrieved here
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(BUNDLE_PARAM_RESULT))
+                mResult.setText(savedInstanceState.getString(BUNDLE_PARAM_RESULT));
+            if (savedInstanceState.containsKey(BUNDLE_PARAM_HISTORY))
+                mHistory.setText(savedInstanceState.getString(BUNDLE_PARAM_HISTORY));
+        }
+    }
 
     /**
-     * Simple helper method to build the {@link NumberButton} objects in the RV
+     * Simple helper method to build the {@link NumberButton} objects in the {@link CalculatorAdapter}
      * @return objects to pass to adapter
      */
     private ArrayList<NumberButton> setUpCalculator(){

@@ -7,9 +7,10 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface JSONPlaceHolderApi {
-    /*@GET("/posts/{id}")
-    public Call<Exchange> getPostWithID(@Path("id") int id);*/
 
+    //This is where the url is built. I pass in the query values from NetworkStatusReceiver when
+    //starting the call for response. Retrofit returns Call<E>
     @GET("latest")
-    public Call<Exchange> getExchanges(@Query("access_key") String access_key, @Query("symbols") String symbols);
+    public Call<Exchange> getExchanges(@Query("access_key") String access_key,
+                                       @Query("symbols") String symbols);
 }

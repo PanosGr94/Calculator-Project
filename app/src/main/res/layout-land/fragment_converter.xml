@@ -30,45 +30,6 @@
 
     </LinearLayout>
 
-    <View
-        android:id="@+id/view_top"
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="@color/colorText"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/ib_switch"
-        app:layout_constraintLeft_toLeftOf="@id/ib_switch"
-        app:layout_constraintRight_toRightOf="@id/ib_switch"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <View
-        android:layout_width="1dp"
-        android:layout_height="0dp"
-        android:background="@color/colorText"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/ib_switch"
-        app:layout_constraintRight_toRightOf="@id/ib_switch"
-        app:layout_constraintTop_toBottomOf="@id/ib_switch"
-
-        />
-
-
-    <ImageView
-        android:id="@+id/ib_switch"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/roundedcorners"
-        android:contentDescription="@string/exchange_button"
-        android:padding="8dp"
-        android:scaleType="fitStart"
-        android:src="@drawable/ic_dashboard_exchange"
-        android:tint="@color/colorAccent"
-        android:visibility="gone"
-        app:layout_constraintRight_toRightOf="@id/guideline_end"
-        app:layout_constraintTop_toBottomOf="@id/tv_label_sell"
-
-        />
 
     <TextView
         android:id="@+id/tv_label_sell"
@@ -109,42 +70,58 @@
 
 
     <View
+        android:id="@+id/view_top"
         android:layout_width="0dp"
         android:layout_height="1dp"
+        android:layout_marginBottom="32dp"
         android:background="@color/colorPrimaryDark"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/view_separator"
-        app:layout_constraintLeft_toLeftOf="@id/guideline"
-        app:layout_constraintRight_toLeftOf="@id/view_separator"
-        app:layout_constraintTop_toTopOf="@id/view_separator"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/tv_label_sell"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/ib_switch"
+        app:layout_constraintTop_toTopOf="parent"
 
         />
 
     <View
+
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:background="@color/colorPrimaryDark"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@id/view_separator"
-        app:layout_constraintLeft_toRightOf="@id/view_separator"
-        app:layout_constraintRight_toLeftOf="@id/ib_switch"
-        app:layout_constraintTop_toTopOf="@id/view_separator" />
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@id/view_top"
+        app:layout_constraintLeft_toRightOf="@id/ib_switch"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/view_top" />
+
 
     <ImageView
-        android:id="@+id/view_separator"
+        android:id="@+id/ib_switch"
         android:layout_width="48dp"
-        android:layout_height="50dp"
-        android:layout_margin="16dp"
-        android:contentDescription="@string/exchange_button"
         android:padding="8dp"
-        android:rotation="90"
+        android:layout_height="48dp"
+        android:background="@drawable/roundedcorners"
         android:src="@drawable/two_way"
         android:tint="@color/colorPrimaryDark"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:contentDescription="@string/exchange_button"
+        android:rotation="90"
+        android:scaleType="fitStart"
+        app:layout_constraintBottom_toBottomOf="@id/view_top"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@id/view_top"
+
+        />
+
+    <View
+        android:id="@+id/view_separator"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/tv_label_buy"
+        app:layout_constraintTop_toBottomOf="@id/et_buy_value" />
 
 
     <TextView
@@ -214,12 +191,6 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="16dp" />
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideline_labels"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="64dp" />
 
 
 </android.support.constraint.ConstraintLayout>

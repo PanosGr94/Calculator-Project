@@ -9,8 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -22,15 +22,11 @@ import com.example.lenovoppc.calculator.Network.NetworkStatusReceiver;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-//TODO: CHECK OUT IF VIEWPAGER IS APPLICABLE
 public class MainActivity extends AppCompatActivity {
 
     public final static String TAG_CALCULATOR_FRAGMENT = "calc_frag";
     public final static String TAG_CONVERTER_FRAGMENT = "conv_frag";
-    public static final String LOG_TAG = "MAINACTIVITY_TAG";
-    private FragmentTransaction fragmentTransaction;
     private FragmentManager fragmentManager;
-    private CalculatorFragment calculatorFragment;
     boolean doubleBackToExitPressedOnce = false;
 
 
@@ -39,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar mProgressBar;
     @BindView(R.id.tv_error_message)
     TextView mErrorMessage;
+    @BindView(R.id.viewpager)
+    ViewPager mViewPager;
 
 
     /**
@@ -49,27 +47,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            fragmentTransaction = fragmentManager.beginTransaction();
             switch (item.getItemId()) {
                 case R.id.navigation_calculator:
-
+                    //if app is offline show error message
                     if (!NetworkStatusReceiver.isAppOnline()) {
                         notifyOffline(TAG_CALCULATOR_FRAGMENT,
                                 mErrorMessage, getResources().getString(R.string.offline_error_message));
                     }
-
-                    /*Replace the calculator fragment with the one previously created*/
-                    calculatorFragment = (CalculatorFragment) fragmentManager.findFragmentByTag(TAG_CALCULATOR_FRAGMENT);
-                    if(calculatorFragment!=null){
-                        fragmentTransaction.replace(R.id.fl_fragment_container,calculatorFragment);
-//                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
-                    }else{
-                        Log.d(LOG_TAG, "Calc frag is null");
-                        calculatorFragment = new CalculatorFragment();
-                        fragmentTransaction.replace(R.id.fl_fragment_container, calculatorFragment,TAG_CALCULATOR_FRAGMENT);
-                        fragmentTransaction.commit();
-                    }
+                    //when tab is clicked switch Fragment through ViewPager
+                    mViewPager.setCurrentItem(0, true);
                     return true;
                 case R.id.navigation_convertor:
 
@@ -77,66 +63,23 @@ public class MainActivity extends AppCompatActivity {
                         notifyOffline(TAG_CONVERTER_FRAGMENT,
                                 mErrorMessage, getResources().getString(R.string.offline_error_message));
                     }
-
-                    /*Replace the calculator Fragment with the converter Fragment*/
-                    ConverterFragment converterFragment = new ConverterFragment();
-                    fragmentTransaction.replace(R.id.fl_fragment_container,converterFragment);
-//                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                    return true;
+                    mViewPager.setCurrentItem(1, true);
+                    return false;
             }
             return false;
         }
     };
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ButterKnife.bind(this);
-
-        /*Instantiate the calculator fragment*/
-        fragmentManager = getSupportFragmentManager();
-        fragmentTransaction = fragmentManager.beginTransaction();
-
-        calculatorFragment = new CalculatorFragment();
-        fragmentTransaction.replace(R.id.fl_fragment_container, calculatorFragment,TAG_CALCULATOR_FRAGMENT);
-//        fragmentTransaction.addToBackStack(null); //to resume fragment and not destroy
-        fragmentTransaction.commit();
-
-
-
-        //(1)Broadcast receiver instance
-        mNSR = new NetworkStatusReceiver(MainActivity.this,mProgressBar,mErrorMessage);
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        //(2) Broadcast Receiver Register
-        registerReceiver(mNSR, intentFilter);
-
-
-        /*Code for bottom navigation*/
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //(3) Broadcast Receiver Unregister. Tried in onPause but crashes bc BR not registered anymore
-        unregisterReceiver(mNSR);
-    }
-
     /**
      * Helper Method to manage the system message for offline status
-     * Static because it's also notified from inside {@link CalculatorFragment} when it is replaced
-     * @param fragment which fragment the user is on
+     *
+     * @param fragment tag of which fragment the user is on
      */
     public static void notifyOffline(String fragment, final TextView mErrorMessage, String error_text) {
         mErrorMessage.setText(error_text);
         mErrorMessage.setVisibility(View.VISIBLE);
         //if message is on calculator remove after 2s.
-        if(fragment.equals(TAG_CALCULATOR_FRAGMENT)) {
+        if (fragment.equals(TAG_CALCULATOR_FRAGMENT)) {
             CountDownTimer countDownTimerStatic = new CountDownTimer(2000, 16) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -151,15 +94,65 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-/*
-    Method for double click to exit
-*/
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
+        /*Code for bottom navigation*/
+        final BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        //Instantiate the viewpager holding our Fragments
+        fragmentManager = getSupportFragmentManager();
+
+        mViewPager.setAdapter(new ViewPageAdapter(fragmentManager));
+        //listener updates bottom navigation tab
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float posOffset, int posOffsetPixels) {
+                navigation.getMenu().getItem(position).setChecked(true);
+            }
+
+            @Override
+            public void onPageSelected(int pos) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+
+
+        /*Initiating BroadcastReceiver to make calls when the app is online and show errors when
+        it is offline */
+        //(1)Broadcast receiver instance
+        mNSR = new NetworkStatusReceiver(MainActivity.this,mProgressBar,mErrorMessage);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        //(2) Broadcast Receiver Register
+        registerReceiver(mNSR, intentFilter);
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //(3) Broadcast Receiver Unregister. Tried in onPause but crashes,BR not registered anymore
+        unregisterReceiver(mNSR);
+    }
+
+    /*
+        Method for double click to exit
+    */
     @Override
     public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
-//            fragmentManager.popBackStackImmediate();
             return;
         }
 
