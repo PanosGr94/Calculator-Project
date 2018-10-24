@@ -24,14 +24,14 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
 
     private ArrayList<NumberButton> layoutContents;
     private Resources resources;
-    ArrayList<Double> toCalculate;
     private CalculatorFragment calculatorInstance;
     //for managing operations
-    private StringBuilder stringBuilder;
-    private String operationHeld;   //operation that will be done when 2 values have been written
+    private static StringBuilder stringBuilder;
+    private static String operationHeld;   //operation that will be done when 2 values have been written
     private int posLastOperation;  //spot where last operand was
     private int currentPosition;  //latest mHistory position
     private double resultScreen; //value that should be on mResult
+    private static double savedResultScreen = 0; //value on mResult after config change
     private double currTotal;   //value being calculated continuously
 
     public CalculatorAdapter(ArrayList<NumberButton> layoutContents, Resources resources,
@@ -39,10 +39,41 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
         this.layoutContents = layoutContents;
         this.resources = resources;
         this.calculatorInstance = calculatorInstance;
-        stringBuilder = new StringBuilder();
-        operationHeld = "first"; //value given for init purposes
-        currentPosition = 0;
-        toCalculate = new ArrayList<Double>();
+        stringBuilder = getStringBuilder();
+        currentPosition = stringBuilder.length();
+        if (currentPosition == 0) {
+            operationHeld = "first"; //value given for init purposes
+        } else {
+            //if the currposition is not 0, then the operations are being made by onsaveinstance
+            //variables. the last operatioin and its position must be re-set
+            operationHeld = getOperationHeld();
+            posLastOperation = stringBuilder.lastIndexOf(operationHeld) + 2; //+2 for the spaces
+        }
+    }
+
+    public static String getOperationHeld() {
+        return operationHeld;
+    }
+
+    public static void setOperationHeld(String operationHeld) {
+        CalculatorAdapter.operationHeld = operationHeld;
+    }
+
+    public static double getSavedResultScreen() {
+        return savedResultScreen;
+    }
+
+    public static void setSavedResultScreen(double savedResultScreen) {
+        CalculatorAdapter.savedResultScreen = savedResultScreen;
+    }
+
+    public static StringBuilder getStringBuilder() {
+        if (stringBuilder == null) return new StringBuilder();
+        return stringBuilder;
+    }
+
+    public static void setHistorySB(StringBuilder stringBuilder) {
+        CalculatorAdapter.stringBuilder = stringBuilder;
     }
 
     @Override
@@ -103,6 +134,10 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
                 currentPosition = stringBuilder.length();
                 //restart the current calculation everytime a new number is added
                 currTotal = 0;
+                if (getSavedResultScreen() != 0) {
+                    resultScreen = getSavedResultScreen();
+                    setSavedResultScreen(0);
+                }
                 //if no other operations have been made
                 if (operationHeld.equals("first")) {
                     resultScreen = Double.parseDouble(stringBuilder.toString());
@@ -129,6 +164,10 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
                 break;
             case CalculatorFragment.OPERATION:
                 //if a new operation is starting, update mResult value now so it doesn't disappear.
+                if (getSavedResultScreen() != 0) {
+                    currTotal = getSavedResultScreen();
+                    setSavedResultScreen(0);
+                }
                 resultScreen = currTotal;
                 //add spaces formatting for beauty
                 stringBuilder = stringBuilder.append(" ").append(value).append(" ");
@@ -199,7 +238,6 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
         stringBuilder = new StringBuilder("");
         calculatorInstance.setResult("0");
         calculatorInstance.setHistory("0");
-        toCalculate.clear();
     }
 
 }

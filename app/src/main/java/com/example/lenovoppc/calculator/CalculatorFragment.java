@@ -4,20 +4,16 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.lenovoppc.calculator.Model.NumberButton;
 import com.example.lenovoppc.calculator.Model.SharedViewModel;
-import com.example.lenovoppc.calculator.Network.NetworkStatusReceiver;
 
 import java.util.ArrayList;
 
@@ -41,6 +37,7 @@ public class CalculatorFragment extends Fragment {
     //parameters for onsaveInstance
     public static final String BUNDLE_PARAM_RESULT = "param_result";
     public static final String BUNDLE_PARAM_HISTORY = "param_history";
+    public static final String BUNDLE_PARAM_OPERATION = "param_operation";
 
     private SharedViewModel viewModel;
     @BindView(R.id.tv_result)
@@ -99,6 +96,7 @@ public class CalculatorFragment extends Fragment {
 
         outState.putString(BUNDLE_PARAM_RESULT, mResult.getText().toString());
         outState.putString(BUNDLE_PARAM_HISTORY, mHistory.getText().toString());
+        outState.putString(BUNDLE_PARAM_OPERATION, CalculatorAdapter.getOperationHeld());
     }
 
     //configuration changes retrieved here
@@ -107,10 +105,19 @@ public class CalculatorFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(BUNDLE_PARAM_RESULT))
-                mResult.setText(savedInstanceState.getString(BUNDLE_PARAM_RESULT));
-            if (savedInstanceState.containsKey(BUNDLE_PARAM_HISTORY))
-                mHistory.setText(savedInstanceState.getString(BUNDLE_PARAM_HISTORY));
+            if (savedInstanceState.containsKey(BUNDLE_PARAM_RESULT)) {
+                String result = savedInstanceState.getString(BUNDLE_PARAM_RESULT);
+                mResult.setText(result);
+                CalculatorAdapter.setSavedResultScreen(Double.parseDouble(result));
+            }
+            if (savedInstanceState.containsKey(BUNDLE_PARAM_HISTORY)) {
+                String history = savedInstanceState.getString(BUNDLE_PARAM_HISTORY);
+                mHistory.setText(history);
+                CalculatorAdapter.setHistorySB(new StringBuilder(history));
+            }
+            if (savedInstanceState.containsKey(BUNDLE_PARAM_OPERATION)) {
+                CalculatorAdapter.setOperationHeld(savedInstanceState.getString(BUNDLE_PARAM_OPERATION));
+            }
         }
     }
 
