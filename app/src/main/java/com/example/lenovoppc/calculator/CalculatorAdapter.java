@@ -16,10 +16,13 @@ import com.example.lenovoppc.calculator.Model.SharedViewModel;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.NumberViewHolder> {
 
     private ArrayList<NumberButton> layoutContents;
@@ -47,7 +50,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
             //if the currposition is not 0, then the operations are being made by onsaveinstance
             //variables. the last operatioin and its position must be re-set
             operationHeld = getOperationHeld();
-            posLastOperation = stringBuilder.lastIndexOf(operationHeld) + 2; //+2 for the spaces
+            posLastOperation = stringBuilder.lastIndexOf(operationHeld) + 1; //+1 for the space
         }
     }
 
@@ -85,7 +88,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
     @Override
     public CalculatorAdapter.NumberViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
 
-        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_button,viewGroup,false);
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_button, viewGroup, false);
 
         NumberViewHolder numberViewHolder = new NumberViewHolder(view);
         return numberViewHolder;
@@ -102,7 +105,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
         //change keyboard background colors depending on type
         if (type.equals(CalculatorFragment.OPERATION)) {
             numberViewHolder.mButton.setCardBackgroundColor(resources.getColor(R.color.colorPrimaryDark));
-        }else if(type.equals(CalculatorFragment.NUMBER)||type.equals(CalculatorFragment.DOT)){
+        } else if (type.equals(CalculatorFragment.NUMBER) || type.equals(CalculatorFragment.DOT)) {
             numberViewHolder.mButton.setCardBackgroundColor(resources.getColor(R.color.colorPrimary));
         } else if (type.equals(CalculatorFragment.FUNCTION)) {
             numberViewHolder.mButton.setCardBackgroundColor(resources.getColor(R.color.colorAccent));
@@ -122,10 +125,10 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
      * OPERATION will actually add to or remove from history
      *
      * @param value the value of the key pressed
-     * @param type the type of the key pressed from {@link CalculatorFragment}
+     * @param type  the type of the key pressed from {@link CalculatorFragment}
      */
     private void checkAndAdd(String value, String type) {
-        DecimalFormat df = new DecimalFormat("#.##");
+        DecimalFormat df = new DecimalFormat("#.#", new DecimalFormatSymbols(Locale.US));
         df.setRoundingMode(RoundingMode.CEILING);
 
         switch (type) {
@@ -169,16 +172,20 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
                     setSavedResultScreen(0);
                 }
                 resultScreen = currTotal;
+                //if no new number has been inserted update the operation sign
+                if (stringBuilder.length() - 1 == posLastOperation && !operationHeld.equals("first")) {
+                    stringBuilder.delete(posLastOperation - 2, stringBuilder.length() + 1);
+                }
                 //add spaces formatting for beauty
                 stringBuilder = stringBuilder.append(" ").append(value).append(" ");
                 //add the 2 spaces to current position count
                 currentPosition = stringBuilder.length() + 2;
+                //keep the position of the latest operand without the added space
+                posLastOperation = stringBuilder.length() - 1;
                 //update the mHistory string
                 calculatorInstance.setHistory(stringBuilder.toString());
                 //save the latest operand for when a new number arrives!
                 operationHeld = value;
-                //keep the position of the latest operand without the added space
-                posLastOperation = stringBuilder.length() - 1;
                 break;
 
         }
@@ -225,7 +232,7 @@ public class CalculatorAdapter extends RecyclerView.Adapter<CalculatorAdapter.Nu
 
         public NumberViewHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
+            ButterKnife.bind(this, itemView);
         }
     }
 
